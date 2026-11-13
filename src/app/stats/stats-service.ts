@@ -8,7 +8,7 @@ export class StatsService {
       transports: ['websocket'],
     });
 
-    public joinMatch(matchId: number | string): void {
+    public joinMatch(matchId: number): void {
       this.ioSocket.emit('readyForMatch', JSON.stringify({ token: '', listId: Number(matchId) }));
     }
 

@@ -1,4 +1,4 @@
-import { patchState, signalStore, withHooks, withMethods, withState } from '@ngrx/signals';
+import { patchState, signalStore, withHooks, withMethods, withProps, withState } from '@ngrx/signals';
 import { ScoreboardDto } from './stats-dto';
 import { inject } from '@angular/core';
 import { StatsService } from './stats-service';
@@ -16,18 +16,23 @@ const initialState: ScoreboardState = {
 export const ScoreboardState = signalStore(
   { providedIn: 'root' },
   withState(initialState),
+  withProps(() => ({
+    service: inject(StatsService)
+  })),
   withMethods(
     (store) => ({
       updateScoreboard(scoreboard: ScoreboardDto): void {
         patchState(store, { scoreboard })
+      },
+      inputId(matchId: number): void {
+        store.service.joinMatch(matchId)
+        console.log(matchId)
       }
     })
   ),
   withHooks({
     onInit(store) {
-      const service = inject(StatsService)
-      service.joinMatch(2400099);
-      service.listen<ScoreboardDto>('scoreboard').subscribe((newScoreboard) => store.updateScoreboard(newScoreboard))
+      store.service.listen<ScoreboardDto>('scoreboard').subscribe((newScoreboard) => store.updateScoreboard(newScoreboard))
     }
   })
 );
